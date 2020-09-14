@@ -6,14 +6,23 @@ Taylor Johnson
 
 ## Feature Task Time Estimate
 
-Feature #1:
-Estimate of time needed to complete:
+Feature #1: Setup the repo
+Estimate of time needed to complete: 20min.
 
-Start time:
+Start time:1:00
 
-Finish time:
+Finish time:1:30
 
-Actual time needed to complete:
+Actual time needed to complete:30min
+
+Feature #2:
+Estimate of time needed to complete: 20min.
+
+Start time:1:00
+
+Finish time:1:30
+
+Actual time needed to complete:30min
 
 # City Explorer API
 
@@ -42,3 +51,7 @@ Actual time needed to complete:
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
 
 -->
+
+```
+
+```

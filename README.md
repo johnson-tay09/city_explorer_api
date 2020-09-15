@@ -15,14 +15,41 @@ Finish time:1:30
 
 Actual time needed to complete:30min
 
-Feature #2:
-Estimate of time needed to complete: 20min.
+Feature #2: Location query
+Estimate of time needed to complete: 1hours.
 
-Start time:1:00
+Start time:2:40
 
-Finish time:1:30
+Finish time:4:40
 
-Actual time needed to complete:30min
+Actual time needed to complete:120min
+
+Feature #3: Weather query
+Estimate of time needed to complete: 2hours.
+
+Start time:4:40
+
+Finish time:6:00
+
+Actual time needed to complete:80min
+
+Feature #3: Errors
+Estimate of time needed to complete: 1hours.
+
+Start time:6:00
+
+Finish time:4:40
+
+Actual time needed to complete:120min
+
+Feature #3: Weather query
+Estimate of time needed to complete: 2hours.
+
+Start time:4:40
+
+Finish time:6:00
+
+Actual time needed to complete:80min
 
 # City Explorer API
 

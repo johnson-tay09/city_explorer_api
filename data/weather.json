@@ -223,7 +223,7 @@
   ],
   "city_name": "Seattle",
   "lon": -122.33,
-  "timezone": "America\/Los_Angeles",
+  "timezone": "America/Los_Angeles",
   "lat": 47.61,
   "country_code": "US",
   "state_code": "WA"

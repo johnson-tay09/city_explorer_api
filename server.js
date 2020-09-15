@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3000;
 const cors = require('cors');
 app.use(cors());
 
+//function to get aggregated location data
 app.get('/location', locationHandler);
 //callback function
 function locationHandler(req, res) {
@@ -19,6 +20,33 @@ function locationHandler(req, res) {
   } catch (error) {
     console.error(error);
   }
+}
+// function to get aggregated weather data
+app.get('/weather', weatherHandler);
+//callback function
+function weatherHandler(req, res) {
+  try {
+    //path to the weather data
+    const weatherData = require('./data/weather.json');
+    //empty array to push weather objects into
+    let weatherArray = [];
+    //for each loop for weather.json data objects (there are 5)
+    weatherData.data.forEach((value) => {
+      //run each object through our constructor
+      let weatherObj = new Weather(value);
+      //push each weather object into our array
+      weatherArray.push(weatherObj);
+    });
+    // console.log(weatherObj);
+    res.send(weatherArray);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function Weather(obj) {
+  this.forecast = obj.weather.description;
+  this.time = obj.datetime;
 }
 
 function City(city, obj) {

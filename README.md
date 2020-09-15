@@ -33,23 +33,14 @@ Finish time:6:00
 
 Actual time needed to complete:80min
 
-Feature #3: Errors
+Feature #4: Errors
 Estimate of time needed to complete: 1hours.
 
 Start time:6:00
 
-Finish time:4:40
+Finish time:7:30
 
-Actual time needed to complete:120min
-
-Feature #3: Weather query
-Estimate of time needed to complete: 2hours.
-
-Start time:4:40
-
-Finish time:6:00
-
-Actual time needed to complete:80min
+Actual time needed to complete:90min
 
 # City Explorer API
 
@@ -58,7 +49,7 @@ Actual time needed to complete:80min
 
 ## Overview
 
-<!-- Provide a high level overview of what this application is and why you are building it, beyond the fact that it's an assignment for this class. (i.e. What's your problem domain?) -->
+A series of labs designed to teach us back end web development.
 
 ## Getting Started
 
@@ -76,9 +67,3 @@ Actual time needed to complete:80min
 
 ## Credits and Collaborations
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
-
--->
-
-```
-
-```

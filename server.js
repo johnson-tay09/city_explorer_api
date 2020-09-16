@@ -80,6 +80,47 @@ function Weather(obj) {
 	this.time = obj.datetime;
 }
 
+// function to get aggregated weather data
+app.get('/trails', trailHandler);
+// callback function
+function trailHandler(req, res) {
+	let lat = req.query.latitude;
+	let lon = req.query.longitude;
+	// console.log(req.query);
+	let key = process.env.HIKING_API_KEY;
+	let url = `https://www.hikingproject.com/data/get-trails?lat=${lat}&lon=${lon}&maxDistance=10&key=${key}`;
+
+	superagent
+		//request from outside site
+		.get(url)
+		//grab data from url
+		.then((value) => {
+			// console.log(value.body);
+			//use map to build an array for each obj
+			const trailData = value.body.trails.map((obj) => {
+				return new Trail(obj);
+			});
+			console.log(trailData);
+			res.send(trailData);
+		})
+		.catch((err) => {
+			console.log('ERROR', err);
+			res.status(500).send('Sorry, something went wrong.');
+		});
+}
+
+function Trail(obj) {
+	this.name = obj.name;
+	this.location = obj.location;
+	this.length = obj.length;
+	this.star_votes = obj.starVotes;
+	this.summary = obj.summary;
+	this.trail_url = obj.url;
+	this.conditions = obj.conditionDetails;
+	this.condition_date = obj.conditionDate.slice(0, 9);
+	this.condition_time = obj.conditionDate.slice(11, 19);
+}
+
 function notFoundHandler(req, res) {
 	res.status(404).send('not found!');
 }

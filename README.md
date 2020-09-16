@@ -61,3 +61,26 @@ Start time:6:00
 Finish time:7:30
 
 Actual time needed to complete:90min
+
+**Version**: 1.1.0
+Refactoring to get data from APIs instead of local files.
+
+## Feature Task Time Estimate
+
+Feature #1: Weather .map
+Estimate of time needed to complete: 1hours.
+
+Start time:4:40
+
+Finish time:6:20
+
+Actual time needed to complete:100min
+
+Feature #2: Locations
+Estimate of time needed to complete: 2hours.
+
+Start time:1:40
+
+Finish time:4:40
+
+Actual time needed to complete:180min

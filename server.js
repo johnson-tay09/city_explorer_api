@@ -11,7 +11,10 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(cors());
-
+//default endpoint
+app.get('/', (req, res) => {
+	res.send('Hello World');
+});
 //when at /location run callback locationHandler
 app.get('/location', locationHandler);
 //this function reaches out to another site in order to get data and serve it to our user
@@ -25,7 +28,7 @@ function locationHandler(req, res) {
 		.get(url)
 		//grab data from outside url
 		.then((data) => {
-			console.log(data);
+			// console.log(data);
 			//specify index of object array you want to extract data from
 			const geoData = data.body[0];
 			//create our own location object with aggregated data via constructor
@@ -46,23 +49,36 @@ function Location(city, geoData) {
 	this.longitude = geoData.lon;
 }
 // function to get aggregated weather data
-// app.get('/weather', weatherHandler);
-//callback function
-// function weatherHandler(req, res) {
-// 	let lat = req.query.lat;
-// 	let lon = req.query.lon;
-// 	let key = process.env.WEATHER_API_KEY;
-// 	let url = `http://api.weatherbit.io/v2.0/forecast/daily?key=${key}lat=${lat}&lon=${lon}&days=8&format=JSON`;
-// 	superagent
-// 		.get(url)
-// 		.then((data) => console.log(data))
-// 		.catch((err) => console.error(err));
-// }
+app.get('/weather', weatherHandler);
+// callback function
+function weatherHandler(req, res) {
+	let lat = req.query.latitude;
+	let lon = req.query.longitude;
+	// console.log(req.query);
+	let key = process.env.WEATHER_API_KEY;
+	let url = `http://api.weatherbit.io/v2.0/forecast/daily?key=${key}&lat=${lat}&lon=${lon}&days=8&format=JSON`;
+	superagent
+		//request from outside site
+		.get(url)
+		//grab data from url
+		.then((value) => {
+			// console.log(value);
+			//use map to build an array for each obj
+			const weatherData = value.body.data.map((obj) => {
+				return new Weather(obj);
+			});
+			res.send(weatherData);
+		})
+		.catch((err) => {
+			console.log('ERROR', err);
+			res.status(500).send('Sorry, something went wrong.');
+		});
+}
 
-// function Weather(obj) {
-// 	this.forecast = obj.weather.description;
-// 	this.time = obj.datetime;
-// }
+function Weather(obj) {
+	this.forecast = obj.weather.description;
+	this.time = obj.datetime;
+}
 
 function notFoundHandler(req, res) {
 	res.status(404).send('not found!');

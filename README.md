@@ -84,3 +84,12 @@ Start time:1:40
 Finish time:4:40
 
 Actual time needed to complete:180min
+
+Feature #3: Trails
+Estimate of time needed to complete: 1hours.
+
+Start time:6:20
+
+Finish time:6:40
+
+Actual time needed to complete: 20in

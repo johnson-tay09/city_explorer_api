@@ -62,7 +62,8 @@ Finish time:7:30
 
 Actual time needed to complete:90min
 
-**Version**: 1.1.0
+## **Version**: 1.1.0
+
 Refactoring to get data from APIs instead of local files.
 
 ## Feature Task Time Estimate
@@ -93,3 +94,18 @@ Start time:6:20
 Finish time:6:40
 
 Actual time needed to complete: 20in
+
+## **Version**: 1.2.0
+
+Incorporating SQL Database
+
+## Feature Task Time Estimate
+
+Feature #1: SQL
+Estimate of time needed to complete: 1hours.
+
+Start time:2:00
+
+Finish time:10:00
+
+Actual time needed to complete:8 hours

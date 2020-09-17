@@ -4,42 +4,72 @@ require('dotenv').config();
 //require modules
 const express = require('express');
 const superagent = require('superagent');
+// do i need to install pg?-------------------
+const pg = require('pg');
 //assignments
 const cors = require('cors');
 const PORT = process.env.PORT || 3000;
+//not clear what this does?--------------------
+const client = new pg.Client(process.env.DATABASE_URL);
 //middleware
 const app = express();
 
 app.use(cors());
+// is this an empty array for our data being sent to our SQL table?----------------
+
 //default endpoint
 app.get('/', (req, res) => {
 	res.send('Hello World');
 });
-//when at /location run callback locationHandler
+// let searchLocations = {};
+// when at /location run callback locationHandler
 app.get('/location', locationHandler);
-//this function reaches out to another site in order to get data and serve it to our user
+
 function locationHandler(req, res) {
-	let city = req.query.city;
-	let key = process.env.GEOCODE_API_KEY;
-	const url = `https://us1.locationiq.com/v1/search.php?key=${key}&q=${city}&format=json&limit=1`;
-	//helper library to fetch data
-	superagent
-		//get request to outside site
-		.get(url)
-		//grab data from outside url
-		.then((data) => {
-			// console.log(data);
-			//specify index of object array you want to extract data from
-			const geoData = data.body[0];
-			//create our own location object with aggregated data via constructor
-			const location = new Location(city, geoData);
-			//serve our user agg data
-			res.send(location);
-		})
-		.catch((err) => {
-			console.log('ERROR', err);
-			res.status(500).send('Sorry, something went wrong.');
-		});
+	const SQL = `SELECT * FROM cities WHERE search_query = $1;`;
+	client.query(SQL, [req.query.city.toLowerCase()]).then((results) => {
+		// let SQL = `SELECT * FROM cities WHERE city_name=${req.query.city}`;
+
+		// Get the results from the database with the client
+		// client.query(SQL).then((results) => {
+		// Send those to the browser
+		if (results.rowCount >= 1) {
+			console.log('getting city from memory', req.query.city);
+			//respond with result.
+
+			res.status(200).json(results.rows[0]);
+		} else {
+			console.log('getting city from API', req.query.city);
+			//the base url for our query
+			let url = `https://us1.locationiq.com/v1/search.php`;
+			//sets the query params to add on to the url
+			let queryObject = {
+				// give it this key
+				key: process.env.GEOCODE_API_KEY,
+				//make city equal the input value
+				city: req.query.city,
+				format: 'json',
+				limit: 1,
+			};
+			superagent
+				//grab the url declared above
+				.get(url)
+				//add search parameters via the queryObj
+				.query(queryObject)
+				//create an object from the data coming back from our query
+				.then((data) => {
+					// take data from body array index 0
+					let geoData = data.body[0];
+					//create a new object called location with the following data set from query
+					const location = new Location(queryObject.city, geoData);
+					addLocation(location);
+					res.send(location);
+				})
+				.catch(() => {
+					res.status(500).send('Sorry, something went wrong');
+				});
+		}
+	});
 }
 //make a new object with agg data from get request
 function Location(city, geoData) {
@@ -47,6 +77,19 @@ function Location(city, geoData) {
 	this.formatted_query = geoData.display_name;
 	this.latitude = geoData.lat;
 	this.longitude = geoData.lon;
+}
+//push new location to DB
+function addLocation(city) {
+	let SQL = `INSERT INTO cities VALUES ($1, $2, $3, $4);`;
+	let safeValues = [
+		city.search_query.toLowerCase(),
+		city.formatted_query,
+		city.latitude,
+		city.longitude,
+	];
+	client
+		.query(SQL, safeValues)
+		.then((data) => console.log(data + 'was stored'));
 }
 // function to get aggregated weather data
 app.get('/weather', weatherHandler);
@@ -100,7 +143,7 @@ function trailHandler(req, res) {
 			const trailData = value.body.trails.map((obj) => {
 				return new Trail(obj);
 			});
-			console.log(trailData);
+			// console.log(trailData);
 			res.send(trailData);
 		})
 		.catch((err) => {
@@ -124,7 +167,15 @@ function Trail(obj) {
 function notFoundHandler(req, res) {
 	res.status(404).send('not found!');
 }
+
 app.use('*', notFoundHandler);
-app.listen(PORT, () => {
-	console.log(`I am listening on port: ${PORT}`);
-});
+
+function startServer() {
+	app.listen(PORT, () => {
+		console.log('Server is listening on port', PORT);
+	});
+}
+client
+	.connect()
+	.then(startServer)
+	.catch((e) => console.log(e));

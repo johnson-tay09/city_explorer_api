@@ -11,6 +11,7 @@ const cors = require('cors');
 const PORT = process.env.PORT || 3000;
 //not clear what this does?--------------------
 const client = new pg.Client(process.env.DATABASE_URL);
+
 //middleware
 const app = express();
 
@@ -26,19 +27,19 @@ app.get('/', (req, res) => {
 app.get('/location', locationHandler);
 
 function locationHandler(req, res) {
+	//safe value is assigned to column one (which is our city in this case)
 	const SQL = `SELECT * FROM cities WHERE search_query = $1;`;
-	client.query(SQL, [req.query.city.toLowerCase()]).then((results) => {
-		// let SQL = `SELECT * FROM cities WHERE city_name=${req.query.city}`;
-
-		// Get the results from the database with the client
-		// client.query(SQL).then((results) => {
-		// Send those to the browser
+	//this puts our req.query.city into the $1
+	const safeValues = [req.query.city];
+	//check the database for query = value of row 1
+	client.query(SQL, safeValues).then((results) => {
+		//if there is a row that matches our query respond with it
 		if (results.rowCount >= 1) {
 			console.log('getting city from memory', req.query.city);
 			//respond with result.
-
 			res.status(200).json(results.rows[0]);
 		} else {
+			//otherwise go get the data from api
 			console.log('getting city from API', req.query.city);
 			//the base url for our query
 			let url = `https://us1.locationiq.com/v1/search.php`;
@@ -63,7 +64,8 @@ function locationHandler(req, res) {
 					//create a new object called location with the following data set from query
 					const location = new Location(queryObject.city, geoData);
 					addLocation(location);
-					res.send(location);
+					//send to the front end
+					res.status(200).send(location);
 				})
 				.catch(() => {
 					res.status(500).send('Sorry, something went wrong');
@@ -80,9 +82,9 @@ function Location(city, geoData) {
 }
 //push new location to DB
 function addLocation(city) {
-	let SQL = `INSERT INTO cities VALUES ($1, $2, $3, $4);`;
+	let SQL = `INSERT INTO cities (search_query, formatted_query, latitude, longitude) VALUES ($1, $2, $3, $4);`;
 	let safeValues = [
-		city.search_query.toLowerCase(),
+		city.search_query,
 		city.formatted_query,
 		city.latitude,
 		city.longitude,

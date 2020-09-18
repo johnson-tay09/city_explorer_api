@@ -17,4 +17,4 @@ CREATE TABLE weather (
   forecast VARCHAR(255)
 );
 
-INSERT INTO weatherdata (search_query, forecast, time) VALUES ('seattle', 'awesome', '9/14/2010');
+-- INSERT INTO weatherdata (search_query, forecast, time) VALUES ('seattle', 'awesome', '9/14/2010');

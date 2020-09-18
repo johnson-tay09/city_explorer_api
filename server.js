@@ -107,48 +107,79 @@ function weatherHandler(req, res) {
   //go into our database and run that SQL with that value
   client.query(SQL, safeValues).then((results) => {
     let todaysDate = new Date(Date.now());
-    // if (results.rowCount > 0 && Date.parse(results.rows[0].weather_time) <= Date.parse(todaysDate)) {
-    if (results.rowCount > 0 && Date.parse(results.rows[0].weather_time) >= Date.parse(todaysDate)) {
-      console.log(Date.parse(results.rows[0].weather_time));
-      console.log(Date.parse(todaysDate));
+    let freshData = ((Date.parse(todaysDate) - Date.parse(results.rows[0]?.weather_time)) < 86400000);
+    if (results.rowCount > 0 && freshData) {
       console.log('getting weather from memory', searchCity);
       res.status(200).json(results.rows);
-    } else if (results.rowCount > 0) {
+    } else if (results.rowCount > 0 && !freshData) {
       console.log('deleting old data');
       const sql = `DELETE FROM weather WHERE search_query = $1;`;
       const safeValue = [searchCity];
+      //delete the data from the table
       client.query(sql, safeValue)
-    }
-    let url = `http://api.weatherbit.io/v2.0/forecast/daily`;
-    //sets the query params to add on to the url
-    let queryObject = {
-      // give it this key
-      key: process.env.WEATHER_API_KEY,
-      lat: req.query.latitude,
-      lon: req.query.longitude,
-      //make city equal the input value
-      days: 8,
-      format: 'json',
-    };
-    superagent
-      //request from outside site
-      .get(url)
-      .query(queryObject)
-      //grab data from url
-      .then((value) => {
-        // console.log(value);
-        //use map to build an array for each obj
-        let weatherData = value.body.data.map((obj) => {
-          return new Weather(obj, searchCity);
+        .then((data) => {
+          console.log(data);
+          console.log(searchCity + ' weather was rewritten');
+          let url = `http://api.weatherbit.io/v2.0/forecast/daily`;
+          //sets the query params to add on to the url
+          let queryObject = {
+            key: process.env.WEATHER_API_KEY,
+            lat: req.query.latitude,
+            lon: req.query.longitude,
+            days: 8,
+            format: 'json',
+          };
+          superagent
+            //request from outside site
+            .get(url)
+            .query(queryObject)
+            //grab data at the url
+            .then((value) => {
+              // console.log(value);
+              //use map to build an array for each obj
+              let weatherData = value.body.data.map((obj) => {
+                return new Weather(obj, searchCity);
+              });
+              addWeather(weatherData);
+              // console.log(weatherData);
+              res.status(200).send(weatherData);
+            })
+            .catch((err) => {
+              console.log('ERROR', err);
+              res.status(500).send('Sorry, something went wrong.');
+            });
         });
-        addWeather(weatherData);
-        // console.log(weatherData);
-        res.status(200).send(weatherData);
-      })
-      .catch((err) => {
-        console.log('ERROR', err);
-        res.status(500).send('Sorry, something went wrong.');
-      });
+    } else {
+      let url = `http://api.weatherbit.io/v2.0/forecast/daily`;
+      //sets the query params to add on to the url
+      let queryObject = {
+        key: process.env.WEATHER_API_KEY,
+        lat: req.query.latitude,
+        lon: req.query.longitude,
+        days: 8,
+        format: 'json',
+      };
+      superagent
+        //request from outside site
+        .get(url)
+        .query(queryObject)
+        //grab data at the url
+        .then((value) => {
+          // console.log(value);
+          //use map to build an array for each obj
+          let weatherData = value.body.data.map((obj) => {
+            return new Weather(obj, searchCity);
+          });
+          addWeather(weatherData);
+          // console.log(weatherData);
+          res.status(200).send(weatherData);
+        })
+        .catch((err) => {
+          console.log('ERROR', err);
+          res.status(500).send('Sorry, something went wrong.');
+        });
+
+    }
   });
 }
 
@@ -172,7 +203,6 @@ function addWeather(obj) {
   })
 }
 
-// function to get aggregated weather data
 app.get('/trails', trailHandler);
 // callback function
 function trailHandler(req, res) {

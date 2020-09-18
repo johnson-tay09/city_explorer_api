@@ -15,7 +15,7 @@ const client = new pg.Client(process.env.DATABASE_URL);
 //middleware
 const app = express();
 
-// app.use(cors());
+app.use(cors());
 // is this an empty array for our data being sent to our SQL table?----------------
 
 //default endpoint
@@ -120,7 +120,7 @@ function weatherHandler(req, res) {
         .then((data) => {
           console.log(data);
           console.log(searchCity + ' weather was rewritten');
-          let url = `http://api.weatherbit.io/v2.0/forecast/daily`;
+          let url = `https://api.weatherbit.io/v2.0/forecast/daily`;
           //sets the query params to add on to the url
           let queryObject = {
             key: process.env.WEATHER_API_KEY,
@@ -150,7 +150,7 @@ function weatherHandler(req, res) {
             });
         });
     } else {
-      let url = `http://api.weatherbit.io/v2.0/forecast/daily`;
+      let url = `https://api.weatherbit.io/v2.0/forecast/daily`;
       //sets the query params to add on to the url
       let queryObject = {
         key: process.env.WEATHER_API_KEY,

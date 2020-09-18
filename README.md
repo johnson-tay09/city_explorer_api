@@ -109,3 +109,18 @@ Start time:2:00
 Finish time:10:00
 
 Actual time needed to complete:8 hours
+
+## **Version**: 1.3.0
+
+Incorporating SQL Database Weather
+
+## Feature Task Time Estimate
+
+Feature #1: SQL Weather Table
+Estimate of time needed to complete: 2hours.
+
+Start time:2:00
+
+Finish time:8:00
+
+Actual time needed to complete: 6 hours

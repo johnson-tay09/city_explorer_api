@@ -1,5 +1,6 @@
 
-DROP TABLE IF EXISTS cities, weather;
+DROP TABLE IF EXISTS cities;
+DROP TABLE IF EXISTS weather;
 
 CREATE TABLE cities (
   id SERIAL PRIMARY KEY,

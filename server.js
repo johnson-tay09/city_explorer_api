@@ -15,7 +15,7 @@ const client = new pg.Client(process.env.DATABASE_URL);
 //middleware
 const app = express();
 
-app.use(cors());
+// app.use(cors());
 // is this an empty array for our data being sent to our SQL table?----------------
 
 //default endpoint

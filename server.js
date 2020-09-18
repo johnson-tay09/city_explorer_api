@@ -107,11 +107,10 @@ function weatherHandler(req, res) {
   //go into our database and run that SQL with that value
   client.query(SQL, safeValues).then((results) => {
     let todaysDate = new Date(Date.now());
-    let freshData = ((Date.parse(todaysDate) - Date.parse(results.rows[0]?.weather_time)) < 86400000);
-    if (results.rowCount > 0 && freshData) {
+    if (results.rowCount > 0 && ((Date.parse(todaysDate) - Date.parse(results.rows[0].weather_time)) < 86400000)) {
       console.log('getting weather from memory', searchCity);
       res.status(200).json(results.rows);
-    } else if (results.rowCount > 0 && !freshData) {
+    } else if (results.rowCount > 0 && ((Date.parse(todaysDate) - Date.parse(results.rows[0].weather_time)) > 86400000)) {
       console.log('deleting old data');
       const sql = `DELETE FROM weather WHERE search_query = $1;`;
       const safeValue = [searchCity];
